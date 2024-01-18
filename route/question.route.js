@@ -13,6 +13,17 @@ res.status(200).json(question);
     res.status(400).json({error:err});
 }
 })
+questionRouter.get('/:questionid',async(req,res)=>{
+    const _id=req.params.questionid
+    try{
+    const question=await QuestionModel.findOne({_id})
+    res.status(200).json(question);
+    }catch(err)
+    {
+        res.status(400).json({error:err});
+    }
+    })
+
 
 questionRouter.get('/',async(req,res)=>{
     try{
