@@ -26,11 +26,13 @@ questionRouter.get('/:questionid',async(req,res)=>{
 
 
 questionRouter.get('/',async(req,res)=>{
+    const search=req.query.search || "";
     try{
-    const question=await QuestionModel.find()
+    const question=await QuestionModel.find({title:{$regex:search,$options:'i'}})
     res.status(200).json(question);
     }catch(err)
     {
+        console.log(err)
         res.status(400).json({error:err});
     }
     })
