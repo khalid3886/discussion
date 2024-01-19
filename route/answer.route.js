@@ -2,6 +2,7 @@ const express=require('express');
 const answerRouter=express.Router();
 const{AnswerModel}=require('../model/answer.model')
 const{auth}=require('../middleware/auth.middleware')
+const{VoteModel}=require('../model/vote.model')
 
 answerRouter.use(auth)
 answerRouter.get('/:questionid',async(req,res)=>{
@@ -47,6 +48,57 @@ answerRouter.delete('/delete/:id',async(req,res)=>{
     else{
     res.json({msg:'you are not authorised'});
     }
+    })
+
+
+    answerRouter.patch('/upvote/:answerID',async(req,res)=>{
+        const answerID=req.params.answerID
+        const {userID}=req.body
+        try{
+            const vote = await VoteModel.findOne({ $and: [{ userID }, { answerID }] });
+            if(vote)
+            {
+                res.status(200).json({msg:'you can only vote once'})
+            }
+            else{
+                const addvote=new VoteModel({userID,answerID})
+                await addvote.save()
+                const answer=await AnswerModel.findOne({_id:answerID})
+                let number=answer.upvote
+                number+=1;
+                await AnswerModel.findByIdAndUpdate(answerID,{upvote:number})
+                res.status(200).json({msg:'upvote has beeen increased'})
+            }
+        }
+        catch(err)
+        {
+            res.status(400).json({error:err})
+        }
+    })
+
+    answerRouter.patch('/downvote/:answerID',async(req,res)=>{
+        const answerID=req.params.answerID
+        const {userID}=req.body
+        try{
+            const vote = await VoteModel.findOne({ $and: [{ userID }, { answerID }] });
+            if(vote)
+            {
+                res.status(200).json({msg:'you can only vote once'})
+            }
+            else{
+                const addvote=new VoteModel({userID,answerID})
+                await addvote.save()
+                const answer=await AnswerModel.findOne({_id:answerID})
+                let number=answer.downvote
+                number+=1;
+                await AnswerModel.findByIdAndUpdate(answerID,{downvote:number})
+                res.status(200).json({msg:'downvote has beeen increased'})
+            }
+        }
+        catch(err)
+        {
+            res.status(400).json({error:err})
+        }
     })
 
 
