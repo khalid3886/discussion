@@ -4,7 +4,7 @@ const questionSchema=mongoose.Schema({
     body:{type: String, required:true},
     userID:String,
     username:String,
-    tags:{type: String,enum:["maths","science","history"] ,required:true},
+    tags:{type: String,enum:["dsa","Java","JavaScript","Node","CSS","HTML"] ,required:true},
     createdAt: { type: Date, default: Date.now }
 },{
     versionKey:false

@@ -27,9 +27,15 @@ questionRouter.get('/:questionid',async(req,res)=>{
 
 questionRouter.get('/',async(req,res)=>{
     const search=req.query.search || "";
+    const limit=5;
+    const page=parseInt(req.query.page)||0
     try{
-    const question=await QuestionModel.find({title:{$regex:search,$options:'i'}})
-    res.status(200).json(question);
+        const createdAt = 'createdAt';
+        const totalQuestions = await QuestionModel.countDocuments({
+            title: { $regex: search, $options: 'i' }
+        });
+    const question=await QuestionModel.find({title:{$regex:search,$options:'i'}}).sort({[createdAt]:'desc'}).skip(limit*page).limit(limit)
+    res.status(200).json({question,totalQuestions});
     }catch(err)
     {
         console.log(err)

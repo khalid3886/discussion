@@ -8,7 +8,8 @@ answerRouter.use(auth)
 answerRouter.get('/:questionid',async(req,res)=>{
     const questionID=req.params.questionid
 try{
-const answer=await AnswerModel.find({questionID})
+    const upvote='upvote'; 
+const answer=await AnswerModel.find({questionID}).sort({[upvote]:'desc'})
 res.status(200).json(answer);
 }catch(err)
 {
@@ -89,10 +90,10 @@ answerRouter.delete('/delete/:id',async(req,res)=>{
                 const addvote=new VoteModel({userID,answerID})
                 await addvote.save()
                 const answer=await AnswerModel.findOne({_id:answerID})
-                let number=answer.downvote
-                number+=1;
-                await AnswerModel.findByIdAndUpdate(answerID,{downvote:number})
-                res.status(200).json({msg:'downvote has beeen increased'})
+                let number=answer.upvote
+                number-=1;
+                await AnswerModel.findByIdAndUpdate(answerID,{upvote:number})
+                res.status(200).json({msg:'you downvoted the user'})
             }
         }
         catch(err)
